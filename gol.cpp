@@ -82,7 +82,6 @@ int main(int argc, char *argv[]) {
 				return 1;
 		}
 	}
-FILE* f = fopen("/path/to/myfile","rb");
 
 	initFromFile( initfilename );
 	mainLoop();
@@ -159,7 +158,11 @@ void display(vector<vector<bool> >& g ){
 	}
 }
 int initFromFile(const string& fname){
-	FILE* f = fopen("/path/to/myfile","rb");
+	FILE* f = fopen(fname.c_str(),"rb");
+	if (!f) {
+	       	exit(1);
+	}
+
 	vector<bool> temp;
 	char c;
 	while ( fread(&c,1,1,f)!=0 ) {
@@ -178,5 +181,6 @@ int initFromFile(const string& fname){
 	fclose(f);
 	row_size = board.size();	
 	col_size = board[0].size();
+	return 1;
 }
 

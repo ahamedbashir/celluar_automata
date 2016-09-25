@@ -43,30 +43,6 @@ string initfilename = "/tmp/gol-world-current"; /* read initial state from here.
 size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g);
 void update();
 int initFromFile(const string& fname);
-/*FILE* f = fopen(fname, "rb");
-	int i = 0;
-	int j = 0;
-	char c;
-	while((c = getc(f))!= EOF) {
-		switch(c) {
-			case '.': grid[i][j] = false; ++i; break;
-			case 'O': grid[i][j] = true; ++i; break;
-			case '\n': ++j; i = 0; break;
-		}
-	}
-	for(int i = 0; i < 10; ++i){
-		for(int j = 0; j < 20; ++j) {
-			if(grid[j][i])
-				cout << "O";
-			else cout << ".";
-		}
-		cout << endl;
-	}
-	cout << endl;
-	fclose(f);
-	return 1;
-}
-*/
 void mainLoop();
 void dumpState(FILE* f);
 //extra functions 
@@ -106,7 +82,6 @@ int main(int argc, char *argv[]) {
 				return 1;
 		}
 	}
-FILE* f = fopen("/path/to/myfile","rb");
 
 	initFromFile( initfilename );
 	mainLoop();
@@ -183,7 +158,10 @@ void display(vector<vector<bool> >& g ){
 	}
 }
 int initFromFile(const string& fname){
-	FILE* f = fopen("/path/to/myfile","rb");
+	FILE* f = fopen(fname.c_str(),"rb");
+	if (!f) {
+	       	exit(1);
+	}
 	vector<bool> temp;
 	char c;
 	while ( fread(&c,1,1,f)!=0 ) {
@@ -202,5 +180,6 @@ int initFromFile(const string& fname){
 	fclose(f);
 	row_size = board.size();	
 	col_size = board[0].size();
+	return 1;
 }
 

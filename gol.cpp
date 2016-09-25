@@ -12,12 +12,15 @@
  * Finally, please indicate approximately how many hours you spent on this:
  * #hours: 
  */
-
+#include <iostream>  //added
+#include <fstream>   //added
 #include <cstdio>
 #include <stdlib.h> // for exit();
 #include <getopt.h> // to parse long arguments.
 #include <unistd.h> // sleep
 #include <vector>
+using std::cout;   //added
+using std::ostream; //added
 using std::vector;
 #include <string>
 using std::string;
@@ -29,6 +32,8 @@ static const char* usage =
 "   --world,-w    FILE     store current world in FILE.\n"
 "   --fast-fw,-f  NUM      evolve system for NUM generations and quit.\n"
 "   --help,-h              show this message and exit.\n";
+vector<vector<bool> > board;  //vector declared to save data from file
+size_t row_size(0), col_size(0); //initial row and column size before getting the vector from file.
 
 size_t max_gen = 0; /* if > 0, fast forward to this generation. */
 string wfilename =  "/tmp/gol-world-current"; /* write state here */
@@ -40,6 +45,9 @@ void update();
 int initFromFile(const string& fname);
 void mainLoop();
 void dumpState(FILE* f);
+//extra functions 
+void copy_vectors( vector<vector<bool> >& g, vector<vector<bool> >& temp);
+void display(vector<vector<bool> >& g );
 
 char text[3] = ".O";
 
@@ -74,40 +82,101 @@ int main(int argc, char *argv[]) {
 				return 1;
 		}
 	}
+FILE* f = fopen("/path/to/myfile","rb");
 
+	initFromFile( initfilename );
 	mainLoop();
 	return 0;
 }
 
 void mainLoop() {
 	/* update, write, sleep */
+	
+	while (max_gen != 0) {
+		display(board);
+		update();
+		--max_gen;
+		sleep(1);	
+	}
 }
 
-size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g{
+size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
+	size_t count = 0;
+	if ( g[(row_size-1 + i)% row_size][j] == true )
+		count++;
+	if ( g[(row_size-1 + i)% row_size][j-1] == true )
+		count++;
+	if ( g[(row_size-1 + i)% row_size][j+1] == true )
+		count++;
+	if ( g[(row_size+1 + i)% row_size][j] == true )
+		count++;
+	if ( g[(row_size+1 + i)% row_size][j-1] == true )
+		count++;
+	if ( g[(row_size+1 + i)% row_size][j+1] == true )
+		count++;
+	if ( g[i][(col_size -1 +j)%col_size] == true )
+		count++;
+	if ( g[i][(col_size +1 +j)%col_size] == true )
+		count++;
+	
+	return count;
 
-		size_t row_size = g.size();
-		size_t col_size = g[i].size();
-		for ( i = 0; i < row_size; ++i)
-			for ( j = 0; j < col_size; ++j){
-				size_t count = 0;
-				if ( g[(row_size-1 + i)% row_size][j] == true )
-					count++;
-				if ( g[(row_size-1 + i)% row_size][j-1] == true )
-					count++;
-				if ( g[(row_size-1 + i)% row_size][j+1] == true )
-					count++;
-				if ( g[(row_size+1 + i)% row_size][j] == true )
-					count++;
-				if ( g[(row_size+1 + i)% row_size][j-1] == true )
-					count++;
-				if ( g[(row_size+1 + i)% row_size][j+1] == true )
-					count++;
-				if ( g[i][(col_size -1 +j)%col_size] == true )
-					count++;
-				if ( g[i][(col_size +1 +j)%col_size] == true )
-					count++;
+			
+}
 
-				return count;
-
+void update(){
+	vector<vector<bool> > temp;
+	temp.resize(row_size, vector<bool>(col_size, false));
+	
+	for ( size_t i = 0; i < row_size; ++i){
+		for ( size_t j = 0; j < col_size; ++j){
+			size_t total_neighbor = (nbrCount(i,j, board ));
+			if ( (total_neighbor == 2 && board[i][j] == true) || total_neighbor == 3)
+				temp[i][j] = true;
 		}
+	}
+	copy_vectors(board, temp);
 }
+ 
+void copy_vectors( vector<vector<bool> >& g, vector<vector<bool> >& temp){
+	for ( size_t i = 0; i < row_size; ++i)
+		for ( size_t j = 0; j < col_size; ++j){
+ 			g[i][j] = temp[i][j];
+  			}
+  	temp.clear();
+  	}
+ 
+ 
+void display(vector<vector<bool> >& g ){
+ 	for ( size_t i = 0; i < row_size; ++i){
+		for ( size_t j = 0; j < col_size; ++j){
+			if ( g[i][j] == true)
+ 				cout << '0';
+		else
+				cout << '.';
+ 			}
+		cout << '\n';
+	}
+}
+int initFromFile(const string& fname){
+	FILE* f = fopen("/path/to/myfile","rb");
+	vector<bool> temp;
+	char c;
+	while ( fread(&c,1,1,f)!=0 ) {
+		if ( c == '\n' ) {
+			board.push_back(temp);
+			temp.clear();
+		}
+		else {
+			if ( c == '.')
+				temp.push_back(false);
+			else
+				temp.push_back(true);
+		}
+	}
+
+	fclose(f);
+	row_size = board.size();	
+	col_size = board[0].size();
+}
+

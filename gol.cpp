@@ -12,15 +12,11 @@
  * Finally, please indicate approximately how many hours you spent on this:
  * #hours: 
  */
-#include <iostream>  //added
-#include <fstream>   //added
 #include <cstdio>
 #include <stdlib.h> // for exit();
 #include <getopt.h> // to parse long arguments.
 #include <unistd.h> // sleep
 #include <vector>
-using std::cout;   //added
-using std::ostream; //added
 using std::vector;
 #include <string>
 using std::string;
@@ -89,59 +85,62 @@ int main(int argc, char *argv[]) {
 
 void mainLoop() {
 	/* update, write, sleep */
-	
-	while (max_gen != 0) {
+	row_size = board.size();	
+	col_size = board[0].size();
+	for ( size_t i = 1; i <= max_gen; ++i) {
+		system("clear");
 		display(board);
 		update();
-		--max_gen;
-		sleep(1);	
+		sleep(1);
 	}
+
+	
 }
 
-size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){ 	//works
-	size_t count = 0;
+size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 
+	size_t count = 0;
 	count = g[(row_size-1 + i)% row_size][j] +
-		g[(row_size-1 + i)% row_size][(col_size -1 +j)%col_size] +  
+		g[(row_size-1 + i)% row_size][(col_size -1 +j)%col_size] +    //works perfectly
 		g[(row_size-1 + i)% row_size][(col_size +1 +j)%col_size] +
 		g[(row_size+1 + i)% row_size][j] +
 		g[(row_size+1 + i)% row_size][(col_size -1 +j)%col_size] +
 		g[(row_size+1 + i)% row_size][(col_size +1 +j)%col_size] +
 		g[i][(col_size -1 +j)%col_size] +
 		g[i][(col_size +1 +j)%col_size];
-
 	return count;
-
 			
 }
 
-void update(){								//need to test
-	vector<vector<bool> > temp;
-	temp.resize(row_size, vector<bool>(col_size, false));
-	
+void update(){								//wprks perfectly
+	vector<vector<bool> > temp(row_size, vector<bool>(col_size, false));
+	size_t total_neighbor = 0;
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
-			size_t total_neighbor = (nbrCount(i,j, board ));
+			total_neighbor = (nbrCount(i,j, board ));
 			if ( (total_neighbor == 2 && board[i][j] == true) || total_neighbor == 3)
 				temp[i][j] = true;
+			else if ( total_neighbor < 2 ||  (total_neighbor ==2 && board[i][j] == false) ||  total_neighbor > 3)
+				temp[i][j] = false;
+			
 		}
 	}
 	board = temp;
 }
-  
  
-void display(vector<vector<bool> >& g ){		//works
+ 
+void display(vector<vector<bool> >& g ){		//works perfectly
  	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( g[i][j] == true)
- 				cout << '0';
+ 				printf("%c",'0');
 		else
-				cout << '.';
- 		}
-		cout << '\n';
+				printf("%c",'.');
+ 			}
+		printf("%c",'\n');
 	}
 }
-int initFromFile(const string& fname){			//works
+int initFromFile(const string& fname){			//works perfectly
 	FILE* f = fopen(fname.c_str(),"rb");
 	if (!f) {
 	       	exit(1);
@@ -162,9 +161,5 @@ int initFromFile(const string& fname){			//works
 	}
 
 	fclose(f);
-	row_size = board.size();	
-	col_size = board[0].size();
-	cout << row_size << " " << col_size << "\n";
 	return 1;
 }
-

@@ -101,23 +101,16 @@ void mainLoop() {
 
 size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 	size_t count = 0;
-	if ( g[(row_size-1 + i)% row_size][j] == true )
-		count++;
-	if ( g[(row_size-1 + i)% row_size][j-1] == true )
-		count++;
-	if ( g[(row_size-1 + i)% row_size][j+1] == true )
-		count++;
-	if ( g[(row_size+1 + i)% row_size][j] == true )
-		count++;
-	if ( g[(row_size+1 + i)% row_size][j-1] == true )
-		count++;
-	if ( g[(row_size+1 + i)% row_size][j+1] == true )
-		count++;
-	if ( g[i][(col_size -1 +j)%col_size] == true )
-		count++;
-	if ( g[i][(col_size +1 +j)%col_size] == true )
-		count++;
-	
+
+	count = g[(row_size-1 + i)% row_size][j] +
+		g[(row_size-1 + i)% row_size][(col_size -1 +j)%col_size] +  
+		g[(row_size-1 + i)% row_size][(col_size +1 +j)%col_size] +
+		g[(row_size+1 + i)% row_size][j] +
+		g[(row_size+1 + i)% row_size][(col_size -1 +j)%col_size] +
+		g[(row_size+1 + i)% row_size][(col_size +1 +j)%col_size] +
+		g[i][(col_size -1 +j)%col_size] +
+		g[i][(col_size +1 +j)%col_size];
+
 	return count;
 
 			
@@ -180,6 +173,7 @@ int initFromFile(const string& fname){
 	fclose(f);
 	row_size = board.size();	
 	col_size = board[0].size();
+	cout << row_size << " " << col_size << "\n";  //test input
 	return 1;
 }
 

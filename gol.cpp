@@ -46,7 +46,6 @@ int initFromFile(const string& fname);
 void mainLoop();
 void dumpState(FILE* f);
 //extra functions 
-void copy_vectors( vector<vector<bool> >& g, vector<vector<bool> >& temp);
 void display(vector<vector<bool> >& g );
 
 char text[3] = ".O";
@@ -99,7 +98,7 @@ void mainLoop() {
 	}
 }
 
-size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
+size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){ 	//works
 	size_t count = 0;
 
 	count = g[(row_size-1 + i)% row_size][j] +
@@ -116,7 +115,7 @@ size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 			
 }
 
-void update(){
+void update(){								//need to test
 	vector<vector<bool> > temp;
 	temp.resize(row_size, vector<bool>(col_size, false));
 	
@@ -127,30 +126,22 @@ void update(){
 				temp[i][j] = true;
 		}
 	}
-	copy_vectors(board, temp);
+	board = temp;
 }
+  
  
-void copy_vectors( vector<vector<bool> >& g, vector<vector<bool> >& temp){
-	for ( size_t i = 0; i < row_size; ++i)
-		for ( size_t j = 0; j < col_size; ++j){
- 			g[i][j] = temp[i][j];
-  			}
-  	temp.clear();
-  	}
- 
- 
-void display(vector<vector<bool> >& g ){
+void display(vector<vector<bool> >& g ){		//works
  	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( g[i][j] == true)
  				cout << '0';
 		else
 				cout << '.';
- 			}
+ 		}
 		cout << '\n';
 	}
 }
-int initFromFile(const string& fname){
+int initFromFile(const string& fname){			//works
 	FILE* f = fopen(fname.c_str(),"rb");
 	if (!f) {
 	       	exit(1);
@@ -173,7 +164,7 @@ int initFromFile(const string& fname){
 	fclose(f);
 	row_size = board.size();	
 	col_size = board[0].size();
-	cout << row_size << " " << col_size << "\n";  //test input
+	cout << row_size << " " << col_size << "\n";
 	return 1;
 }
 

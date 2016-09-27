@@ -87,7 +87,6 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	FILE* fout = fopen(wfilename.c_str(),"wb");
 
 	for ( size_t i = 0; i <= max_gen; ++i) {
 		system("clear");

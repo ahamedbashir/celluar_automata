@@ -87,8 +87,11 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
+	//fworld = fopen(wfilename.c_str(),"wb");
 
 	for ( size_t i = 0; i <= max_gen; ++i) {
+	fworld = fopen(wfilename.c_str(),"wb");
+
 		system("clear");
 		display(board);
 		dumpState(fworld);
@@ -136,7 +139,7 @@ void display(vector<vector<bool> >& g ){		//works perfectly
  	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( g[i][j] == true)
- 				printf("%c",'0');
+ 				printf("%c",'O');
 		else
 				printf("%c",'.');
  			}
@@ -168,18 +171,18 @@ int initFromFile(const string& fname){			//works perfectly
 }
 
 void dumpState(FILE* f){
-	f = fopen(wfilename.c_str(),"wb");
 	char c = '.';
+	char newline = '\n';
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( board[i][j] == true)
- 				c = '0'; 
+ 				c = 'O'; 
 			else if ( board[i][j] == false)
 				c = '.';
 
 			fwrite(&c,1,1,f);
  			}
-		fwrite("\n",1,1,f);
+		fwrite(&newline,1,1,f);
 	}
 	rewind(f);
 }

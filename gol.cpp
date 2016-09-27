@@ -92,11 +92,11 @@ void mainLoop() {
 	for ( size_t i = 0; i <= max_gen; ++i) {
 		system("clear");
 		display(board);
-		dumpState(fout);
+		dumpState(fworld);
 		update();
 		sleep(1);
 	}
-	fclose(fout);
+	fclose(fworld);
 
 	
 }
@@ -169,7 +169,7 @@ int initFromFile(const string& fname){			//works perfectly
 }
 
 void dumpState(FILE* f){
-//	f = fopen(wfilename.c_str(),"wb");
+	f = fopen(wfilename.c_str(),"wb");
 	char c = '.';
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){

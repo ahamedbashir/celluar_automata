@@ -87,12 +87,16 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	for ( size_t i = 1; i <= max_gen; ++i) {
+	FILE* fout = fopen(wfilename.c_str(),"wb");
+
+	for ( size_t i = 0; i <= max_gen; ++i) {
 		system("clear");
 		display(board);
+		dumpState(fout);
 		update();
 		sleep(1);
 	}
+	fclose(fout);
 
 	
 }
@@ -163,3 +167,21 @@ int initFromFile(const string& fname){			//works perfectly
 	fclose(f);
 	return 1;
 }
+
+void dumpState(FILE* f){
+//	f = fopen(wfilename.c_str(),"wb");
+	char c = '.';
+	for ( size_t i = 0; i < row_size; ++i){
+		for ( size_t j = 0; j < col_size; ++j){
+			if ( board[i][j] == true)
+ 				c = '0'; 
+			else if ( board[i][j] == false)
+				c = '.';
+
+			fwrite(&c,1,1,f);
+ 			}
+		fwrite("\n",1,1,f);
+	}
+	rewind(f);
+}
+

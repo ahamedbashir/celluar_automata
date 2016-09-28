@@ -87,15 +87,13 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	//fworld = fopen(wfilename.c_str(),"wb");
-
-	for ( size_t i = 0; i <= max_gen; ++i) {
 	fworld = fopen(wfilename.c_str(),"wb");
-
+	for ( size_t i = 0; i <= max_gen; ++i) {
 		system("clear");
 		display(board);
 		dumpState(fworld);
-		update();
+		if ( i != max_gen)
+			update();
 		sleep(1);
 	}
 	fclose(fworld);
@@ -118,7 +116,7 @@ size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 			
 }
 
-void update(){								//wprks perfectly
+void update(){								//works perfectly
 	vector<vector<bool> > temp(row_size, vector<bool>(col_size, false));
 	size_t total_neighbor = 0;
 	for ( size_t i = 0; i < row_size; ++i){
@@ -173,6 +171,7 @@ int initFromFile(const string& fname){			//works perfectly
 void dumpState(FILE* f){
 	char c = '.';
 	char newline = '\n';
+	rewind(f);
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( board[i][j] == true)
@@ -184,6 +183,5 @@ void dumpState(FILE* f){
  			}
 		fwrite(&newline,1,1,f);
 	}
-	rewind(f);
 }
 

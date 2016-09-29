@@ -87,7 +87,11 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	fworld = fopen(wfilename.c_str(),"wb");
+	string nofilename = "-";
+	if ( wfilename == nofilename)
+		fworld = fopen(initfilename.c_str(),"wb");
+
+	else fworld = fopen(wfilename.c_str(),"wb");
 	for ( size_t i = 0; i <= max_gen; ++i) {
 		system("clear");
 		display(board);

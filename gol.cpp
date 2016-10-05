@@ -35,6 +35,7 @@ size_t max_gen = 0; /* if > 0, fast forward to this generation. */
 string wfilename =  "/tmp/gol-world-current"; /* write state here */
 FILE* fworld = 0; /* handle to file wfilename. */
 string initfilename = "/tmp/gol-world-current"; /* read initial state from here. */
+string nofilename = "-";  // string to check stdin and stout redirection for some os as dash command is not portable
 
 size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g);
 void update();
@@ -87,29 +88,28 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	string nofilename = "-";
-	if ( wfilename == nofilename)
-		fworld = fopen(initfilename.c_str(),"wb");
+	if ( wfilename == nofilename)					// checks whether the user wanted to redirect the output to input file. better to use /dev/stdout, and /dev/stdin
+		fworld = fopen(initfilename.c_str(),"wb");		// but the test.sh fucntion uses dash(-) command to run.
 
 	else fworld = fopen(wfilename.c_str(),"wb");
 	
 	if ( max_gen > 0 ){
-		for ( size_t i = 0; i < max_gen; ++i) {
-			update();
+		for ( size_t i = 0; i < max_gen; ++i) {			// when an user defined a the numbers generation, 
+			update();					// gets that generation without any delay
 		}
-		dumpState(fworld);
-		display(board);
-		fclose(fworld);
+		dumpState(fworld);					// prints the desired generation into the binary file
+		display(board);						// display that generation on the screen
+		fclose(fworld);						// closes the write file after dumping the desired generation
 	}
 	else {
-		while ( max_gen == 0 ){
-			system("clear");
-			display(board);
-			dumpState(fworld);
-			update();
+		while ( max_gen == 0 ){					// when number of generation is not defined by the user loops continues
+			system("clear");				// member function to clear the display, only necessary for the display function.
+			display(board);					// calls the display function to  display the 2d vector after every update
+			dumpState(fworld);				// calls the dupState function to save the vector in a binay file
+			update();					// calls the update function to update the conditon of the cells of the 2d vector board.
 			sleep(1);
 		}
-		fclose(fworld);
+		fclose(fworld);						// closes the file opened to write the output
 	}
 	
 }
@@ -117,7 +117,7 @@ void mainLoop() {
 size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 
 	size_t count = 0;
-	count = g[(row_size-1 + i)% row_size][j] +
+	count = g[(row_size-1 + i)% row_size][j] +				// using modulu to wrap around the edges regardles of their position in 2d vector or array
 		g[(row_size-1 + i)% row_size][(col_size -1 +j)%col_size] +    //works perfectly
 		g[(row_size-1 + i)% row_size][(col_size +1 +j)%col_size] +	//counts the eight neighbor of a particular cell
 		g[(row_size+1 + i)% row_size][j] +				//located at (i,j) position
@@ -129,20 +129,20 @@ size_t nbrCount(size_t i, size_t j, const vector<vector<bool> >& g){
 			
 }
 
-void update(){								//works perfectly
+void update(){								// fucntion to update the board by checking the number of neighbor
 	vector<vector<bool> > temp(row_size, vector<bool>(col_size, false));
 	size_t total_neighbor = 0;
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			total_neighbor = (nbrCount(i,j, board ));
-			if ( (total_neighbor == 2 && board[i][j] == true) || total_neighbor == 3)	// checks the numbers of neighbor of a cell
-				temp[i][j] = true;							//if the cell has more than three or less two neighbors, it dies
-			else if ( total_neighbor < 2 ||  (total_neighbor ==2 && board[i][j] == false) ||  total_neighbor > 3)	//if a dead cel has exactly three neighbor, it grows,
-				temp[i][j] = false;
+			if ( (total_neighbor == 2 && board[i][j] == true) || total_neighbor == 3)	// total neighbor is 2 and alive, remains alive. If the total neighbor is 3, it gets alive whether it was dead or alive.
+				temp[i][j] = true;							// the cell is now alive
+			else if ( total_neighbor < 2 ||  (total_neighbor ==2 && board[i][j] == false) ||  total_neighbor > 3)	//if the cell has more than three or less two neighbors, it dies
+				temp[i][j] = false;							// cell is now dead
 			
 		}
 	}
-	board = temp;
+	board = temp;		//copy the updated vector to the original vector
 }
  
  
@@ -162,39 +162,38 @@ int initFromFile(const string& fname){			//works perfectly
 	if (!f) {					//checks whether the file is opened successfully
 	       	exit(1);				//if fails, the programs exits returning int value 1
 	}
-	vector<bool> temp;
+	vector<bool> temp;				//initial vector to read the data from a single line
 	char c;
-	while ( fread(&c,1,1,f)!=0 ) {
-		if ( c == '\n' ) {
-			board.push_back(temp);		
-			temp.clear();
+	while ( fread(&c,1,1,f)!=0 ) {  // call to fread function to read the data from a file
+		if ( c == '\n' ) {	// checks if the char is a new line character and pushs that into the vector
+			board.push_back(temp); // saves the data from the vector temp into the 2d vcetor board
+			temp.clear();		// clears the data from the vector temp to get data from a another line
 		}
 		else {
 			if ( c == '.')
-				temp.push_back(false);		
+				temp.push_back(false); //
 			else
 				temp.push_back(true);
 		}
 	}
 
-	fclose(f);
+	fclose(f);		// closes the file
 	return 1;
 }
 
-void dumpState(FILE* f){
-	char c = '.';
+void dumpState(FILE* f){			// function to write the output into a file
+	char c = '.';				// initialization of a char variable to save into a binary file
 	char newline = '\n';
-	rewind(f);
+	rewind(f);				// function call to write everyting from the first binarty of a file
 	for ( size_t i = 0; i < row_size; ++i){
 		for ( size_t j = 0; j < col_size; ++j){
 			if ( board[i][j] == true)
- 				c = 'O'; 
+ 				c = 'O';
 			else if ( board[i][j] == false)
 				c = '.';
-
-			fwrite(&c,1,1,f);
+			fwrite(&c,1,1,f);	//prints the value of char 'c' into the file called by the handler
  			}
-		fwrite(&newline,1,1,f);
+		fwrite(&newline,1,1,f);		//prints a newline into the file to get the next char in a newline
 	}
 }
 

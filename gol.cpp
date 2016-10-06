@@ -88,10 +88,8 @@ void mainLoop() {
 	/* update, write, sleep */
 	row_size = board.size();	
 	col_size = board[0].size();
-	if ( wfilename == nofilename)					// checks whether the user wanted to redirect the output to input file. better to use /dev/stdout, and /dev/stdin
-		fworld = fopen(initfilename.c_str(),"wb");		// but the test.sh fucntion uses dash(-) command to run.
 
-	else fworld = fopen(wfilename.c_str(),"wb");
+	fworld = fopen(wfilename.c_str(),"wb");
 	
 	if ( max_gen > 0 ){
 		for ( size_t i = 0; i < max_gen; ++i) {			// when an user defined a the numbers generation, 

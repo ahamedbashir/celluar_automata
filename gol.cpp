@@ -1,5 +1,10 @@
 /*
  * CSc103 Project 3: Game of Life
+ * Grpup Members: 
+ * 		Bashir Ahamed
+ * 		Ruma Bhowmik
+ * 		Md Naim Uddin
+ * 		NFN Jotei
  * See readme.html for details.
  * Please list all references you made use of in order to complete the
  * assignment: your classmates, websites, etc.  Aside from the lecture notes
@@ -10,7 +15,8 @@
  *
  *
  * Finally, please indicate approximately how many hours you spent on this:
- * #hours: 
+ * #hours: 1.5 hours ( to make it run) + 2 hours ( to fix errors)
+ * 8 hours trying to fix dash autoredirection but later found out that it is not portable on every OS.
  */
 #include <cstdio>
 #include <stdlib.h> // for exit();
